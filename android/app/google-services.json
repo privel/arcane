@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "19431857896",
+    "project_id": "samplebase-5a9e9",
+    "storage_bucket": "samplebase-5a9e9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19431857896:android:9c3c47d06ae6758ddb735d",
+        "android_client_info": {
+          "package_name": "com.arcane.arcane"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBu4cPN6g-CaG4vcev85qyM5w__DX0qKpI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
