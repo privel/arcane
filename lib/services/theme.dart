@@ -29,6 +29,21 @@ class AppThemes {
         return Colors.white; // фон, если не выбран
       }),
     ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: const BorderSide(
+              width: 1.0,
+              color: Colors.black12,
+            ),
+          ),
+        ),
+        shadowColor: const WidgetStatePropertyAll(Colors.transparent),
+      ),
+    ),
+    
     colorScheme: const ColorScheme.light(
       primary: Colors.black,
       secondary: Colors.greenAccent,

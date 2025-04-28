@@ -1,5 +1,8 @@
-import 'package:fl_chart/fl_chart.dart';
+import 'package:arcane/widgets/line_graph/line_graph.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:iconly/iconly.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,7 +12,338 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _dayController = TextEditingController(text: "12");
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+
+    TextEditingController day = TextEditingController();
+    TextEditingController month = TextEditingController();
+    TextEditingController year = TextEditingController();
+
+    @override
+    void dispose() {
+      // Clean up the controller when the widget is disposed.
+      day.dispose();
+      month.dispose();
+      year.dispose();
+      //super :)
+      super.dispose();
+    }
+
+    void calculate_fl_chart() {
+      if (day.text.isEmpty || month.text.isEmpty || year.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Пожалуйста, заполните все поля')),
+        );
+        return;
+      }
+
+      final int? dayInt = int.tryParse(day.text.trimLeft());
+      final int? monthInt = int.tryParse(month.text.trimLeft());
+      final int? yearInt = int.tryParse(year.text.trimLeft());
+
+      if (dayInt == null || monthInt == null || yearInt == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Введите правильные числовые значения')),
+        );
+        return;
+      }
+
+      if (dayInt < 1 ||
+          dayInt > 31 ||
+          monthInt < 1 ||
+          monthInt > 12 ||
+          yearInt < 1000 ||
+          yearInt > 3000) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Введите корректные дату, месяц и год')),
+        );
+        return;
+      }
+
+      // Перемножение дня, месяца и года
+      int result = dayInt * monthInt * yearInt;
+
+      String resultStr = result.toString();
+
+      // Если число меньше 7 знаков — добавляем его начальные цифры к концу, пока не будет 7 знаков
+      while (resultStr.length < 7) {
+        resultStr += resultStr.substring(0, 1);
+      }
+      resultStr = resultStr.substring(0, 7); // точно обрезаем до 7 символов
+
+      print('Итоговый семизначный код: $resultStr');
+
+      // Теперь подготовка данных для графика
+      int birthYear = yearInt;
+      List<Map<String, dynamic>> graphData = [];
+
+      for (int i = 0; i < 7; i++) {
+        int year = birthYear + i;
+        int yValue = int.parse(resultStr[i]);
+        graphData.add({'year': year, 'value': yValue});
+      }
+
+      // Просто вывод для проверки
+      for (var point in graphData) {
+        print('Год: ${point['year']} — Значение: ${point['value']}');
+      }
+
+      // Теперь Вы можете использовать `graphData` для построения графика через fl_chart
+    }
+
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
+        child: Column(
+          children: [
+            // Заголовок и кнопка выбора даты
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "График жизни",
+                  style: TextStyle(
+                    fontFamily: "Inter",
+                    fontWeight: FontWeight.w600,
+                    fontSize: 28,
+                  ),
+                ),
+                SizedBox(
+                  height: 40,
+                  child: ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(IconlyLight.calendar),
+                    label: const Text(
+                      "Выбрать дату",
+                      style: TextStyle(
+                        fontFamily: "Inter",
+                        fontWeight: FontWeight.w400,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30),
+
+            // Адаптивный контейнер
+            if (isMobile) ...[
+              Column(
+                children: [
+                  Container(
+                    height: 250,
+                    width: double.infinity,
+                    color: Colors.blue[100],
+                    child:
+                        const Center(child: Text("Правый виджет (мобильный)")),
+                  ),
+                  const SizedBox(height: 20),
+                  Container(
+                    height: 250,
+                    width: double.infinity,
+                    color: Colors.green[100],
+                    child:
+                        const Center(child: Text("Левый виджет (мобильный)")),
+                  ),
+                ],
+              ),
+            ] else if (isTablet) ...[
+              Column(
+                children: [
+                  Container(
+                    height: 350,
+                    width: double.infinity,
+                    color: Colors.blue[100],
+                    child: const Center(child: Text("Правый виджет (планшет)")),
+                  ),
+                  const SizedBox(height: 30),
+                  Container(
+                    height: 350,
+                    width: double.infinity,
+                    color: Colors.green[100],
+                    child: const Center(child: Text("Левый виджет (планшет)")),
+                  ),
+                ],
+              ),
+            ] else ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: Container(
+                      height: 600,
+                      color: Colors.green[100],
+                      child: LineGraph(),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      height: 500,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                            // ignore: deprecated_member_use
+                            color: Colors.grey.withOpacity(0.3),
+                            width: 2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Выбор даты",
+                              style: TextStyle(
+                                fontFamily: "Inter",
+                                fontWeight: FontWeight.w400,
+                                fontSize: 24,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 60,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 13),
+                              child: TextField(
+                                controller: day,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      2), // <-- Ограничение на 2 символа
+                                  FilteringTextInputFormatter
+                                      .digitsOnly, // <-- Разрешаем только цифры
+                                ],
+                                decoration: InputDecoration(
+                                  // filled: true,
+                                  // fillColor: Colors.grey[200],
+                                  // hintText: "Введите день",
+                                  labelText:
+                                      "Введите день", // <-- добавляем labelText
+                                  labelStyle:
+                                      const TextStyle(color: Colors.grey),
+
+                                  hintStyle:
+                                      const TextStyle(color: Colors.grey),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black12, width: 2),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(
+                                        color: Color(0xFFb31217), width: 1.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 13),
+                              child: TextField(
+                                controller: month,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      2), // <-- Ограничение на 2 символа
+                                  FilteringTextInputFormatter
+                                      .digitsOnly, // <-- Разрешаем только цифры
+                                ],
+                                decoration: InputDecoration(
+                                  // filled: true,
+                                  // fillColor: Colors.grey[200],
+                                  // hintText: "Введите месяц",
+                                  labelText:
+                                      "Введите месяц", // <-- добавляем labelText
+                                  labelStyle:
+                                      const TextStyle(color: Colors.grey),
+                                  hintStyle:
+                                      const TextStyle(color: Colors.grey),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black12, width: 2),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(
+                                        color: Color(0xFFb31217), width: 1.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 13),
+                              child: TextField(
+                                controller: year,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(
+                                      4), // <-- Ограничение на 2 символа
+                                  FilteringTextInputFormatter
+                                      .digitsOnly, // <-- Разрешаем только цифры
+                                ],
+                                decoration: InputDecoration(
+                                  // filled: true,
+                                  // fillColor: Colors.grey[200],
+                                  // hintText: "Введите год",
+                                  labelText:
+                                      "Введите год", // <-- добавляем labelText
+                                  labelStyle:
+                                      const TextStyle(color: Colors.grey),
+                                  hintStyle:
+                                      const TextStyle(color: Colors.grey),
+
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                        color: Colors.black12, width: 2),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: const BorderSide(
+                                        color: Color(0xFFb31217), width: 1.5),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 50),
+                            Center(
+                              child: SizedBox(
+                                width: 275,
+                                height: 45,
+                                child: ElevatedButton.icon(
+                                  onPressed: calculate_fl_chart,
+                                  icon: const Icon(IconlyLight.calendar),
+                                  label: const Text("Рассчитать график"),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+/* final TextEditingController _dayController = TextEditingController(text: "12");
   final TextEditingController _monthController = TextEditingController(text: "12");
   final TextEditingController _yearController = TextEditingController(text: "2000");
 
@@ -196,5 +530,4 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-}
+  } */

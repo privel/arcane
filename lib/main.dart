@@ -1,5 +1,5 @@
 import 'package:arcane/firebase_options.dart';
-import 'package:arcane/nav_provider.dart';
+import 'package:arcane/services/providers/nav_provider.dart';
 import 'package:arcane/pages/auth/login.dart';
 import 'package:arcane/pages/auth/register.dart';
 import 'package:arcane/pages/home.dart';
@@ -25,6 +25,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        
         StreamProvider<User?>.value(
           value: AuthService().authStateChanges,
           initialData: FirebaseAuth.instance.currentUser,
@@ -133,7 +134,8 @@ class _MainCodeState extends State<MainCode> {
             ),
           ),
 
-          // AppBar фиксирован в Stack
+          
+          
           Header(
             headerPosition: _headerPosition,
           ),

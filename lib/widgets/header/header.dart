@@ -1,4 +1,4 @@
-import 'package:arcane/nav_provider.dart';
+import 'package:arcane/services/providers/nav_provider.dart';
 import 'package:arcane/services/auth_service.dart'; 
 import 'package:flutter/material.dart';
 
