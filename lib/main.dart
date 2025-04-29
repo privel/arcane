@@ -1,4 +1,5 @@
 import 'package:arcane/firebase_options.dart';
+import 'package:arcane/services/providers/line_graph_provider.dart';
 import 'package:arcane/services/providers/nav_provider.dart';
 import 'package:arcane/pages/auth/login.dart';
 import 'package:arcane/pages/auth/register.dart';
@@ -25,6 +26,8 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        ChangeNotifierProvider(create: (_) => LifeChartProvider()),
+
         
         StreamProvider<User?>.value(
           value: AuthService().authStateChanges,
