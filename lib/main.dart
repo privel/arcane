@@ -6,6 +6,7 @@ import 'package:arcane/pages/auth/register.dart';
 import 'package:arcane/pages/home.dart';
 import 'package:arcane/services/auth_service.dart';
 import 'package:arcane/services/theme.dart';
+import 'package:arcane/widgets/buttons/navbtn.dart';
 import 'package:arcane/widgets/header/header.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -117,35 +118,119 @@ class _MainCodeState extends State<MainCode> {
   Widget build(BuildContext context) {
     final navProvider = Provider.of<NavigationProvider>(context);
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Содержимое страницы под AppBar
-          Positioned.fill(
-            top: 65, // ← высота AppBar
-            child: ListView(
-              controller: _scrollController,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: IndexedStack(
-                    index: navProvider.currentIndex,
-                    children: pages,
-                  ),
-                ),
-              ],
-            ),
-          ),
+    // return Scaffold(
+    //   body: Stack(
+    //     children: [
+    //       // Содержимое страницы под AppBar
+    //       Positioned.fill(
+    //         top: 65, // ← высота AppBar
+    //         child: ListView(
+    //           controller: _scrollController,
+    //           children: [
+    //             SizedBox(
+    //               height: MediaQuery.of(context).size.height,
+    //               child: IndexedStack(
+    //                 index: navProvider.currentIndex,
+    //                 children: pages,
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
 
           
           
-          Header(
-            headerPosition: _headerPosition,
+    //       Header(
+    //         headerPosition: _headerPosition,
+    //       ),
+    //     ],
+    //   ),
+    //   drawer: buildDrawer(context),
+    // );
+
+  return Scaffold(
+  body: NotificationListener<UserScrollNotification>(
+    onNotification: (notification) {
+      final direction = notification.direction;
+
+      // Обновим _isHeaderVisible для контроля, если вам нужно дополнительно
+      if (direction == ScrollDirection.reverse && _isHeaderVisible) {
+        setState(() => _isHeaderVisible = false);
+      } else if (direction == ScrollDirection.forward && !_isHeaderVisible) {
+        setState(() => _isHeaderVisible = true);
+      }
+
+      return true;
+    },
+    child: CustomScrollView(
+      controller: _scrollController,
+      slivers: [
+        SliverAppBar(
+          floating: true,
+          snap: true,
+          // pinned: ResponsiveBreakpoints.of(context).largerThan(MOBILE),
+          pinned: false,
+          elevation: 0,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          toolbarHeight: 66,
+          automaticallyImplyLeading: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET),
+          title: Row(
+            children: [
+              const Text(
+                "Arcane",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              
+              if (ResponsiveBreakpoints.of(context).largerThan(TABLET)) ...[
+                NavButton(label: "Главная", onPressed: () {
+                  Provider.of<NavigationProvider>(context, listen: false).setIndex(0);
+                }),
+                NavButton(label: "Продукты", onPressed: () {
+                  Provider.of<NavigationProvider>(context, listen: false).setIndex(1);
+                }),
+                NavButton(label: "Проекты", onPressed: () {
+                  Provider.of<NavigationProvider>(context, listen: false).setIndex(2);
+                }),
+                NavButton(label: "Задачи", onPressed: () {
+                  Provider.of<NavigationProvider>(context, listen: false).setIndex(3);
+                }),
+                NavButton(label: "Настройки", onPressed: () {
+                  Provider.of<NavigationProvider>(context, listen: false).setIndex(4);
+                }),
+                const SizedBox(width: 20),
+                const Spacer(),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    await AuthService().signOut();
+                  },
+                  icon: const Icon(Icons.logout, size: 18),
+                  label: const Text("Выйти"),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(color: Colors.black12),
+                  ),
+                ),
+              ]
+            ],
           ),
-        ],
-      ),
-      drawer: buildDrawer(context),
-    );
+        ),
+
+        // Контент страницы
+        SliverToBoxAdapter(
+          child: pages[navProvider.currentIndex],
+        ),
+      ],
+    ),
+  ),
+  drawer: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET)
+      ? buildDrawer(context)
+      : null,
+);
+
+
   }
 
   Drawer buildDrawer(BuildContext context) {

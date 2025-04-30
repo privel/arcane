@@ -57,15 +57,26 @@ class LineGraph extends StatelessWidget {
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 30,
+              reservedSize: 270,
               interval: 1,
               getTitlesWidget: (value, meta) {
-                int year = birthDate.year + value.toInt();
+                int mainYear = birthDate.year + value.toInt();
+
+                // создаём столбик из основного года + последующих через 7 лет
+                List<int> columnYears = List.generate(
+                  15,
+                  (i) => mainYear + i * 7,
+                );
+
                 return Padding(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(
-                    year.toString(),
-                    style: const TextStyle(fontSize: 10),
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Column(
+                    children: columnYears.map((year) {
+                      return Text(
+                        '$year г.',
+                        style: const TextStyle(fontSize: 12),
+                      );
+                    }).toList(),
                   ),
                 );
               },
@@ -89,7 +100,6 @@ class LineGraph extends StatelessWidget {
           ),
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          
         ),
         borderData: FlBorderData(
           show: true,
@@ -100,36 +110,32 @@ class LineGraph extends StatelessWidget {
             top: BorderSide(color: Colors.black12),
           ),
         ),
-        
         lineBarsData: [
           LineChartBarData(
-            
             isCurved: true,
             // preventCurveOverShooting: true,
 
-                    color: Colors.red,
-                    barWidth: 3,
-                    dotData: FlDotData(show: false),
-                    belowBarData: BarAreaData(
-                      show: true,
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.red.withOpacity(0.3),
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-          
+            color: Colors.red,
+            barWidth: 3,
+            dotData: FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              gradient: LinearGradient(
+                colors: [
+                  Colors.red.withOpacity(0.3),
+                  Colors.transparent,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+
             // color: Colors.orange,
             // barWidth: 2,
             // dotData: FlDotData(show: true),
             spots: spots,
           ),
         ],
-
-        
       ),
     );
   }
