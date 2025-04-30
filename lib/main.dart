@@ -15,7 +15,6 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -28,8 +27,6 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         ChangeNotifierProvider(create: (_) => LifeChartProvider()),
-
-        
         StreamProvider<User?>.value(
           value: AuthService().authStateChanges,
           initialData: FirebaseAuth.instance.currentUser,
@@ -45,16 +42,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    
-
-
     return MaterialApp(
       title: 'Arcane',
       debugShowCheckedModeBanner: false,
       theme: AppThemes.light,
       darkTheme: AppThemes.dark,
-      
       themeMode: ThemeMode.light,
       builder: (context, child) => ResponsiveBreakpoints.builder(
         child: child!,
@@ -84,6 +76,7 @@ class MainCode extends StatefulWidget {
 
 class _MainCodeState extends State<MainCode> {
   final ScrollController _scrollController = ScrollController();
+
   bool _isHeaderVisible = true;
   double _headerPosition = 0.0;
 
@@ -94,6 +87,7 @@ class _MainCodeState extends State<MainCode> {
     Center(child: Text('Tasks Page')),
     Center(child: Text('Settings Page')),
   ];
+
   @override
   void initState() {
     super.initState();
@@ -118,119 +112,128 @@ class _MainCodeState extends State<MainCode> {
   Widget build(BuildContext context) {
     final navProvider = Provider.of<NavigationProvider>(context);
 
-    // return Scaffold(
-    //   body: Stack(
-    //     children: [
-    //       // Содержимое страницы под AppBar
-    //       Positioned.fill(
-    //         top: 65, // ← высота AppBar
-    //         child: ListView(
-    //           controller: _scrollController,
-    //           children: [
-    //             SizedBox(
-    //               height: MediaQuery.of(context).size.height,
-    //               child: IndexedStack(
-    //                 index: navProvider.currentIndex,
-    //                 children: pages,
-    //               ),
-    //             ),
-    //           ],
-    //         ),
-    //       ),
+    return Scaffold(
+      body: NotificationListener<UserScrollNotification>(
+        onNotification: (notification) {
+          final direction = notification.direction;
 
-          
-          
-    //       Header(
-    //         headerPosition: _headerPosition,
-    //       ),
-    //     ],
-    //   ),
-    //   drawer: buildDrawer(context),
-    // );
+          if (direction == ScrollDirection.reverse && _isHeaderVisible) {
+            setState(() => _isHeaderVisible = false);
+          } else if (direction == ScrollDirection.forward &&
+              !_isHeaderVisible) {
+            setState(() => _isHeaderVisible = true);
+          }
 
-  return Scaffold(
-  body: NotificationListener<UserScrollNotification>(
-    onNotification: (notification) {
-      final direction = notification.direction;
-
-      // Обновим _isHeaderVisible для контроля, если вам нужно дополнительно
-      if (direction == ScrollDirection.reverse && _isHeaderVisible) {
-        setState(() => _isHeaderVisible = false);
-      } else if (direction == ScrollDirection.forward && !_isHeaderVisible) {
-        setState(() => _isHeaderVisible = true);
-      }
-
-      return true;
-    },
-    child: CustomScrollView(
-      controller: _scrollController,
-      slivers: [
-        SliverAppBar(
-          floating: true,
-          snap: true,
-          // pinned: ResponsiveBreakpoints.of(context).largerThan(MOBILE),
-          pinned: false,
-          elevation: 0,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          toolbarHeight: 66,
-          automaticallyImplyLeading: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET),
-          title: Row(
-            children: [
-              const Text(
-                "Arcane",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              
-              if (ResponsiveBreakpoints.of(context).largerThan(TABLET)) ...[
-                NavButton(label: "Главная", onPressed: () {
-                  Provider.of<NavigationProvider>(context, listen: false).setIndex(0);
-                }),
-                NavButton(label: "Продукты", onPressed: () {
-                  Provider.of<NavigationProvider>(context, listen: false).setIndex(1);
-                }),
-                NavButton(label: "Проекты", onPressed: () {
-                  Provider.of<NavigationProvider>(context, listen: false).setIndex(2);
-                }),
-                NavButton(label: "Задачи", onPressed: () {
-                  Provider.of<NavigationProvider>(context, listen: false).setIndex(3);
-                }),
-                NavButton(label: "Настройки", onPressed: () {
-                  Provider.of<NavigationProvider>(context, listen: false).setIndex(4);
-                }),
-                const SizedBox(width: 20),
-                const Spacer(),
-                OutlinedButton.icon(
-                  onPressed: () async {
-                    await AuthService().signOut();
-                  },
-                  icon: const Icon(Icons.logout, size: 18),
-                  label: const Text("Выйти"),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    side: const BorderSide(color: Colors.black12),
+          return true;
+        },
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverPersistentHeader(
+              pinned: false,
+              floating: true,
+              delegate: _AnimatedHeader(
+                minExtent: 66,
+                maxExtent: 66,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      if (ResponsiveBreakpoints.of(context)
+                          .smallerOrEqualTo(TABLET)) ...[
+                        Builder(
+                          builder: (context) => IconButton(
+                            icon: const Icon(Icons.menu),
+                            onPressed: () => Scaffold.of(context).openDrawer(),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 15,
+                        ),
+                        const Text(
+                          "Arcane",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                      if (ResponsiveBreakpoints.of(context)
+                          .largerThan(TABLET)) ...[
+                        const Text(
+                          "Arcane",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        NavButton(
+                            label: "Главная",
+                            onPressed: () {
+                              Provider.of<NavigationProvider>(context,
+                                      listen: false)
+                                  .setIndex(0);
+                            }),
+                        NavButton(
+                            label: "Продукты",
+                            onPressed: () {
+                              Provider.of<NavigationProvider>(context,
+                                      listen: false)
+                                  .setIndex(1);
+                            }),
+                        NavButton(
+                            label: "Проекты",
+                            onPressed: () {
+                              Provider.of<NavigationProvider>(context,
+                                      listen: false)
+                                  .setIndex(2);
+                            }),
+                        NavButton(
+                            label: "Задачи",
+                            onPressed: () {
+                              Provider.of<NavigationProvider>(context,
+                                      listen: false)
+                                  .setIndex(3);
+                            }),
+                        NavButton(
+                            label: "Настройки",
+                            onPressed: () {
+                              Provider.of<NavigationProvider>(context,
+                                      listen: false)
+                                  .setIndex(4);
+                            }),
+                        const Spacer(),
+                        OutlinedButton.icon(
+                          onPressed: () async {
+                            await AuthService().signOut();
+                          },
+                          icon: const Icon(Icons.logout, size: 18),
+                          label: const Text("Выйти"),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.black,
+                            side: const BorderSide(color: Colors.black12),
+                          ),
+                        ),
+                      ]
+                    ],
                   ),
                 ),
-              ]
-            ],
-          ),
+              ),
+            ),
+            // Контент страницы
+            SliverToBoxAdapter(
+              child: pages[navProvider.currentIndex],
+            ),
+          ],
         ),
-
-        // Контент страницы
-        SliverToBoxAdapter(
-          child: pages[navProvider.currentIndex],
-        ),
-      ],
-    ),
-  ),
-  drawer: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET)
-      ? buildDrawer(context)
-      : null,
-);
-
-
+      ),
+      drawer: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET)
+          ? buildDrawer(context)
+          : null,
+    );
   }
 
   Drawer buildDrawer(BuildContext context) {
@@ -288,7 +291,9 @@ class _MainCodeState extends State<MainCode> {
             },
           ),
           const Spacer(),
-          const Divider(thickness: 0.8,),
+          const Divider(
+            thickness: 0.8,
+          ),
           if (isLoggedIn)
             ListTile(
               leading: const Icon(Icons.logout),
@@ -301,5 +306,50 @@ class _MainCodeState extends State<MainCode> {
         ],
       ),
     );
+  }
+}
+
+class _AnimatedHeader extends SliverPersistentHeaderDelegate {
+  final double minExtent;
+  final double maxExtent;
+  final Widget child;
+
+  _AnimatedHeader({
+    required this.minExtent,
+    required this.maxExtent,
+    required this.child,
+  });
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    final double targetOffset = -shrinkOffset.clamp(0.0, maxExtent);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.0, end: targetOffset),
+      duration: const Duration(milliseconds: 180), // длительность анимации
+      curve: Curves.easeOutCubic,
+      builder: (context, animatedOffset, childWidget) {
+        return Transform.translate(
+          offset: Offset(0, animatedOffset),
+          child: SizedBox(
+            height: maxExtent,
+            child: Material(
+              elevation: 4,
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: child,
+            ),
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _AnimatedHeader oldDelegate) {
+    return oldDelegate.child != child ||
+        oldDelegate.minExtent != minExtent ||
+        oldDelegate.maxExtent != maxExtent;
   }
 }
