@@ -6,17 +6,41 @@ class NavigationProvider extends ChangeNotifier {
   bool _isDarkMode = false;
   bool _isThemeLoaded = false;
 
+  final Map<String, int> _pathToIndex = {
+    '/life-graph': 0,
+    '/products': 1,
+    '/projects': 2,
+    '/tasks': 3,
+    '/settings': 4,
+  };
+
+  final List<String> _indexToPath = [
+    '/life-graph',
+    '/products',
+    '/projects',
+    '/tasks',
+    '/settings',
+  ];
+
   int get currentIndex => _currentIndex;
+  String get currentPath => _indexToPath[_currentIndex];
   bool get isDarkMode => _isDarkMode;
   bool get isThemeLoaded => _isThemeLoaded;
 
   NavigationProvider() {
-    _loadTheme(); // просто вызов здесь
+    _loadTheme();
   }
 
   void setIndex(int index) {
     _currentIndex = index;
     notifyListeners();
+  }
+
+  void setPath(String path) {
+    if (_pathToIndex.containsKey(path)) {
+      _currentIndex = _pathToIndex[path]!;
+      notifyListeners();
+    }
   }
 
   void toggleTheme() {

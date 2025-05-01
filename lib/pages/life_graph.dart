@@ -6,14 +6,14 @@ import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class CalcLifeGraph extends StatefulWidget {
+  const CalcLifeGraph({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<CalcLifeGraph> createState() => _CalcLifeGraphState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _CalcLifeGraphState extends State<CalcLifeGraph> {
   List<String> generateYears(DateTime birthDate) {
     final int startYear = birthDate.year;
     return List.generate(105, (index) => "${startYear + index} г.");
@@ -22,16 +22,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final providerGraph = Provider.of<LifeChartProvider>(context);
-
     final isMobile = ResponsiveBreakpoints.of(context).isMobile;
-    // final isTablet = ResponsiveBreakpoints.of(context).isTablet;
     final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
-
-    // providerGraph.setDay("12");
-    // providerGraph.setMonth("12");
-    // providerGraph.setYear("2000");
-    // DateTime? selectedDate;
-    // bool isGraphVisible = false;
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
@@ -65,8 +57,6 @@ class DesktopWidgets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime? selectedDate;
-    bool isGraphVisible = false;
     return Padding(
       padding: const EdgeInsets.only(
           left: 30.0, top: 20.0, right: 30.0, bottom: 1000),
@@ -106,7 +96,7 @@ class DesktopWidgets extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                flex: 4,
+                flex: 3,
                 child: Container(
                   height: 900,
                   decoration: BoxDecoration(
@@ -174,10 +164,8 @@ class DesktopWidgets extends StatelessWidget {
                           child: TextField(
                             onChanged: providerGraph.setDay,
                             inputFormatters: [
-                              LengthLimitingTextInputFormatter(
-                                  2), // <-- Ограничение на 2 символа
-                              FilteringTextInputFormatter
-                                  .digitsOnly, // <-- Разрешаем только цифры
+                              LengthLimitingTextInputFormatter(2),
+                              FilteringTextInputFormatter.digitsOnly,
                             ],
                             decoration: InputDecoration(
                               // filled: true,
@@ -303,9 +291,6 @@ class MobileWidgets extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime? selectedDate;
-    bool isGraphVisible = false;
-
     return Padding(
       padding: const EdgeInsets.only(
           left: 20.0, top: 20.0, right: 20.0, bottom: 1000),
@@ -543,21 +528,6 @@ class TabletWidgets extends StatelessWidget {
                   fontSize: 28,
                 ),
               ),
-              // SizedBox(
-              //   height: 40,
-              //   child: ElevatedButton.icon(
-              //     onPressed: () {},
-              //     icon: const Icon(IconlyLight.calendar),
-              //     label: const Text(
-              //       "Выбрать дату",
-              //       style: TextStyle(
-              //         fontFamily: "Inter",
-              //         fontWeight: FontWeight.w400,
-              //         fontSize: 15,
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
           const SizedBox(height: 30),
