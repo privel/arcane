@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -36,8 +37,11 @@ class _AppScaffoldState extends State<AppScaffold> {
     final isTabletOrSmaller =
         ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET);
 
+    final user = FirebaseAuth.instance.currentUser;
+    final isLoggedIn = user != null;
+
     return Scaffold(
-      drawer: isTabletOrSmaller ? _buildDrawer(context) : null,
+      drawer: isTabletOrSmaller ? buildDrawer(context) : null,
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
@@ -67,8 +71,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                           color: Colors.black,
                         ),
                       ),
-                    ],
-                    if (!isTabletOrSmaller) ...[
+                    ] else ...[
                       const Text(
                         "Arcane",
                         style: TextStyle(
@@ -92,7 +95,30 @@ class _AppScaffoldState extends State<AppScaffold> {
                       NavButton(
                           label: "Настройки",
                           onPressed: () => context.go('/settings')),
-                    ]
+                      const Spacer(),
+                      if (isLoggedIn) ...[
+                        Text(
+                          user!.email ?? '',
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.black54),
+                        ),
+                        const SizedBox(width: 12),
+                        TextButton.icon(
+                          onPressed: () async {
+                            await FirebaseAuth.instance.signOut();
+                            context.go('/');
+                          },
+                          icon: const Icon(Icons.logout, size: 18),
+                          label: const Text("Выйти"),
+                        ),
+                      ] else ...[
+                        TextButton.icon(
+                          onPressed: () => context.go('/auth/login'),
+                          icon: const Icon(Icons.login, size: 18),
+                          label: const Text("Войти"),
+                        ),
+                      ],
+                    ],
                   ],
                 ),
               ),
@@ -106,41 +132,77 @@ class _AppScaffoldState extends State<AppScaffold> {
     );
   }
 
-  Widget _buildDrawer(BuildContext context) {
+  Widget buildDrawer(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    final isLoggedIn = user != null;
+
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Color(0xFFb31217)),
-            child: Text('Меню',
-                style: TextStyle(color: Colors.white, fontSize: 20)),
+          UserAccountsDrawerHeader(
+            accountName: Text(isLoggedIn ? (user.email ?? 'User') : 'Guest'),
+            accountEmail: isLoggedIn ? null : const Text("Not signed in"),
+            currentAccountPicture: const CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Icon(Icons.person, color: Colors.black),
+            ),
+            decoration: const BoxDecoration(color: Color(0xFFb31217)),
+            otherAccountsPictures: !isLoggedIn
+                ? [
+                    IconButton(
+                      icon: const Icon(Icons.login, color: Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context.go('/auth/login');
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.app_registration,
+                          color: Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        context.go('/auth/register');
+                      },
+                    ),
+                  ]
+                : null,
           ),
           ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Главная'),
-            onTap: () => context.go('/'),
+            leading: const Icon(Icons.home_outlined),
+            title: const Text("Главная"),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/');
+            },
           ),
           ListTile(
-            leading: const Icon(Icons.shopping_bag),
-            title: const Text('Продукты'),
-            onTap: () => context.go('/products'),
+            leading: const Icon(Icons.shopping_bag_outlined),
+            title: const Text("Продукты"),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/products');
+            },
           ),
           ListTile(
-            leading: const Icon(Icons.work),
-            title: const Text('Проекты'),
-            onTap: () => context.go('/projects'),
+            leading: const Icon(Icons.settings_outlined),
+            title: const Text("Настройки"),
+            onTap: () {
+              Navigator.pop(context);
+              context.go('/settings');
+            },
           ),
-          ListTile(
-            leading: const Icon(Icons.check_box),
-            title: const Text('Задачи'),
-            onTap: () => context.go('/tasks'),
-          ),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Настройки'),
-            onTap: () => context.go('/settings'),
-          ),
+          const Spacer(),
+          const Divider(thickness: 0.8),
+          if (isLoggedIn)
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text("Выйти"),
+              onTap: () async {
+                Navigator.pop(context);
+                await FirebaseAuth.instance.signOut();
+                context.go('/');
+              },
+            ),
         ],
       ),
     );

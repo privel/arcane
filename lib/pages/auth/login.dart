@@ -1,6 +1,7 @@
 import 'package:arcane/services/auth_service.dart';
 import 'package:arcane/widgets/buttons/textbtn.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class LoginPage extends StatefulWidget {
@@ -167,7 +168,6 @@ class _buildRightPanelState extends State<buildRightPanel> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-
                 //ВХОД через google
                 ElevatedButton(
                   onPressed: () async {
@@ -284,7 +284,7 @@ class _buildRightPanelState extends State<buildRightPanel> {
                           SizedBox(
                             width: buttonWidthReg,
                             child: ElevatedButton(
-                              onPressed: () => toRegisterPage(context),
+                              onPressed: () => context.go("/auth/register"),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     const Color.fromARGB(255, 88, 10, 13),
@@ -327,7 +327,7 @@ class _buildRightPanelState extends State<buildRightPanel> {
                           SizedBox(
                             width: buttonWidthReg,
                             child: ElevatedButton(
-                              onPressed: () => toRegisterPage(context),
+                              onPressed: () => context.go("/auth/register"),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     const Color.fromARGB(255, 88, 10, 13),

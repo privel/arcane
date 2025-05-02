@@ -1,6 +1,7 @@
 import 'package:arcane/services/auth_service.dart';
 import 'package:arcane/widgets/buttons/textbtn.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -15,7 +16,6 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     final isMobile = ResponsiveBreakpoints.of(context).isMobile;
     final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
 
     final double containerWidth = isMobile
         ? double.infinity
@@ -142,11 +142,9 @@ class _buildRightPanelState extends State<buildRightPanel> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-     
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
-      auth.registerWithEmailPassword(
-          email: email, password: password);
+      auth.registerWithEmailPassword(email: email, password: password);
       Navigator.pushNamed(context, "/");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Регистрация прошла успешно")),
@@ -316,7 +314,7 @@ class _buildRightPanelState extends State<buildRightPanel> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              onPressed: () => toLoginPage(context),
+                              onPressed: () => context.go("/auth/login"),
                               child: Text(
                                 "Login",
                                 style: Theme.of(context).textTheme.titleMedium,
@@ -359,7 +357,7 @@ class _buildRightPanelState extends State<buildRightPanel> {
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              onPressed: () => toLoginPage(context),
+                              onPressed: () => context.go("/auth/login"),
                               child: Text(
                                 "Login",
                                 style: Theme.of(context).textTheme.titleMedium,
