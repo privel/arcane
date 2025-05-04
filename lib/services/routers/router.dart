@@ -1,10 +1,12 @@
 import 'package:arcane/pages/auth/login.dart';
 import 'package:arcane/pages/auth/register.dart';
+import 'package:arcane/pages/graph_life.dart';
 import 'package:arcane/pages/home_page.dart';
+import 'package:arcane/pages/matrix.dart';
+import 'package:arcane/pages/sample.dart';
 import 'package:arcane/widgets/header/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:arcane/pages/life_graph.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -15,6 +17,10 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/products',
+      builder: (context, state) => const AppScaffold(child: Text("/products")),
+    ),
+    GoRoute(
+      path: '/product1',
       builder: (context, state) => const AppScaffold(child: Text("/products")),
     ),
     GoRoute(
@@ -38,8 +44,12 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const RegisterPage(),
     ),
     GoRoute(
-      path: '/calculator',
-      builder: (context, state) => const CalcLifeGraph(),
+      path: '/calc/lifegr',
+      builder: (context, state) => const AppScaffold(child: GraphLife()),
+    ),
+    GoRoute(
+      path: '/calc/matrix',
+      builder: (context, state) => const AppScaffold(child: MatrixPage()),
     ),
   ],
 );

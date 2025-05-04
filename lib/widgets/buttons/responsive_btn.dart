@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
+import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
+
 class ResponsiveButtonGrid extends StatelessWidget {
   final List<Widget> buttons;
 
@@ -31,11 +34,15 @@ class ResponsiveButtonGrid extends StatelessWidget {
               runSpacing: spacing,
               alignment: WrapAlignment.center,
               children: buttons
-                  .map((btn) => ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: isTablet ? 280 : 320,
-                          maxWidth: isDesktop ? 360 : 340,
-                        ),
+                  // .map((btn) => ConstrainedBox(
+                  //       constraints: BoxConstraints(
+                  //         minWidth: isTablet ? 280 : 320,
+                  //         maxWidth: isDesktop ? 360 : 340,
+                  //       ),
+                  //       child: btn,
+                  //     ))
+                  .map((btn) => Padding(
+                        padding: EdgeInsets.only(bottom: spacing),
                         child: btn,
                       ))
                   .toList(),
@@ -46,6 +53,7 @@ class ResponsiveButtonGrid extends StatelessWidget {
 
 class ContainerBlockWithTransition extends StatelessWidget {
   final String mainName;
+  final String discription;
   final VoidCallback onPressed;
   final double height;
   final double width;
@@ -53,6 +61,7 @@ class ContainerBlockWithTransition extends StatelessWidget {
   const ContainerBlockWithTransition({
     super.key,
     required this.mainName,
+    required this.discription,
     required this.onPressed,
     required this.height,
     required this.width,
@@ -62,26 +71,15 @@ class ContainerBlockWithTransition extends StatelessWidget {
   Widget build(BuildContext context) {
     final isMobile = ResponsiveBreakpoints.of(context).isMobile;
     final isTablet = ResponsiveBreakpoints.of(context).isTablet;
-    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
 
-    // Примеры адаптивных значений
-    final double logoSize = isMobile
-        ? 60
+    final double logoSize = isMobile ? 100 : 120;
+    final double textFontSizeMain = isMobile
+        ? 18
         : isTablet
-            ? 80
-            : 200;
-
-    final double textFontSize = isMobile
-        ? 12
-        : isTablet
-            ? 14
-            : 16;
-
-    final double paddingValue = isMobile
-        ? 8
-        : isTablet
-            ? 12
-            : 16;
+            ? 18
+            : 20;
+    final double textFontSizeDesc = isMobile ? 12 : 14;
+    final double paddingValue = isMobile ? 12 : 20;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -91,38 +89,130 @@ class ContainerBlockWithTransition extends StatelessWidget {
           height: height,
           width: width,
           decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.grey.withOpacity(0.3),
-              width: 2,
-            ),
+            color: Colors.white,
+            border: Border.all(color: Colors.grey.withOpacity(0.3), width: 2),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: paddingValue,
-              vertical: paddingValue,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  height: logoSize,
-                  width: logoSize,
-                  color: Colors.brown,
-                  child: const Center(child: SelectableText("LOGO")),
-                ),
-                const SizedBox(width: 12),
-                Flexible(
-                  child: SelectableText(
-                    mainName,
-                    style: TextStyle(
-                      fontFamily: "Inter",
-                      fontWeight: FontWeight.w600,
-                      fontSize: textFontSize,
-                    ),
+            padding: EdgeInsets.all(paddingValue),
+            child: isMobile
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: logoSize,
+                        width: logoSize,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          color: Colors.brown,
+                        ),
+                        child: const Center(child: Text("LOGO")),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            mainName.toUpperCase(),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: textFontSizeMain,
+                              fontFamily: "Inter",
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        discription,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: textFontSizeDesc,
+                          color: Colors.black.withOpacity(0.7),
+                        ),
+                      ),
+                      const Spacer(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton.icon(
+                          onPressed: onPressed,
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 8),
+                          ),
+                          icon: const Icon(Icons.arrow_forward, size: 16),
+                          label: const Text(
+                            "РАССЧИТАТЬ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Container(
+                        height: logoSize,
+                        width: logoSize,
+                        margin: const EdgeInsets.only(right: 24),
+                        decoration: const BoxDecoration(
+                          color: Colors.brown,
+                        ),
+                        child: const Center(child: Text("LOGO")),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  mainName.toUpperCase(),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: textFontSizeMain,
+                                    fontFamily: "Inter",
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              discription,
+                              style: TextStyle(
+                                fontSize: textFontSizeDesc,
+                                color: Colors.black.withOpacity(0.7),
+                              ),
+                            ),
+                            const Spacer(),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton.icon(
+                                onPressed: onPressed,
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 8),
+                                ),
+                                icon: const Icon(Icons.arrow_forward, size: 16),
+                                label: const Text(
+                                  "РАССЧИТАТЬ",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
         ),
       ),

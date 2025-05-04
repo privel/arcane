@@ -25,12 +25,13 @@ class HomePage extends StatelessWidget {
                     : 32,
             vertical: isMobile ? 20 : 40,
           ),
-          child: Center(
-            child: isMobile
-                ? const MobileLayout()
-                : isTablet
-                    ? const TabletLayout()
-                    : const DesktopLayout(),
+          child: const Center(
+            // child: isMobile
+            //     ? const MobileLayout()
+            //     : isTablet
+            //         ? const TabletLayout()
+            //         : const DesktopLayout(),
+            child: DesktopLayout(),
           ),
         ),
       ),
@@ -75,6 +76,22 @@ class DesktopLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
+    final isTablet = ResponsiveBreakpoints.of(context).isTablet;
+    final isDesktop = ResponsiveBreakpoints.of(context).isDesktop;
+
+    final double blockHeight = isMobile
+        ? 270
+        : isTablet
+            ? 220
+            : 240;
+
+    final double blockWidth = isMobile
+        ? 300
+        : isTablet
+            ? 410
+            : 415;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -90,27 +107,35 @@ class DesktopLayout extends StatelessWidget {
         ResponsiveButtonGrid(
           buttons: [
             ContainerBlockWithTransition(
-              mainName: "Чакроанализ",
-              height: 140,
-              width: 350,
-              onPressed: () {},
+              mainName: "Гpaфик жизни",
+              discription:
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+              height: blockHeight,
+              width: blockWidth,
+              onPressed: () => context.go('/calc/lifegr'),
             ),
             ContainerBlockWithTransition(
-              mainName: "Совместимость",
-              height: 140,
-              width: 350,
-              onPressed: () {},
+              mainName: "Матрица Судьбы",
+              discription:
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+              height: blockHeight,
+              width: blockWidth,
+              onPressed: () => context.go('/calc/matrix'),
             ),
             ContainerBlockWithTransition(
               mainName: "Призма Души",
-              height: 140,
-              width: 350,
+              discription:
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+              height: blockHeight,
+              width: blockWidth,
               onPressed: () {},
             ),
             ContainerBlockWithTransition(
               mainName: "Матрица Судьбы",
-              height: 140,
-              width: 350,
+              discription:
+                  "Lorem Ipsum is simply dummy text of the printing and typesetting industry. ",
+              height: blockHeight,
+              width: blockWidth,
               onPressed: () {},
             ),
           ],

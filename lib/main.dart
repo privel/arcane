@@ -2,8 +2,6 @@ import 'package:arcane/firebase_options.dart';
 import 'package:arcane/pages/home_page.dart';
 import 'package:arcane/services/providers/line_graph_provider.dart';
 import 'package:arcane/services/providers/nav_provider.dart';
-import 'package:arcane/pages/auth/login.dart';
-import 'package:arcane/pages/auth/register.dart';
 import 'package:arcane/services/auth_service.dart';
 import 'package:arcane/services/routers/router.dart';
 import 'package:arcane/services/theme.dart';
@@ -59,29 +57,6 @@ class MyApp extends StatelessWidget {
         ],
       ),
     );
-    //return MaterialApp(
-    //   title: 'Arcane',
-    //   debugShowCheckedModeBanner: false,
-
-    //   theme: AppThemes.light,
-    //   darkTheme: AppThemes.dark,
-    //   themeMode: ThemeMode.light,
-    //   builder: (context, child) => ResponsiveBreakpoints.builder(
-    //     child: child!,
-    //     breakpoints: [
-    //       const Breakpoint(start: 0, end: 450, name: MOBILE),
-    //       const Breakpoint(start: 451, end: 800, name: TABLET),
-    //       const Breakpoint(start: 801, end: 1920, name: DESKTOP),
-    //       const Breakpoint(start: 1921, end: double.infinity, name: '4K'),
-    //     ],
-    //   ),
-    //   initialRoute: '/',
-    //   routes: {
-    //     '/': (context) => const MainCode(),
-    //     '/auth/login': (context) => const LoginPage(),
-    //     '/auth/register': (context) => const RegisterPage(),
-    //   },
-    // );
   }
 }
 
