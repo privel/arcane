@@ -127,6 +127,8 @@ class GraphLife extends StatelessWidget {
                               horizontal: 10, vertical: 13),
                           child: TextField(
                             onChanged: providerGraph.setDay,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: false, signed: false),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(2),
                               FilteringTextInputFormatter.digitsOnly,
@@ -158,6 +160,8 @@ class GraphLife extends StatelessWidget {
                               horizontal: 10, vertical: 13),
                           child: TextField(
                             onChanged: providerGraph.setMonth,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: false, signed: false),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(
                                   2), // <-- Ограничение на 2 символа
@@ -190,6 +194,8 @@ class GraphLife extends StatelessWidget {
                               horizontal: 10, vertical: 13),
                           child: TextField(
                             onChanged: providerGraph.setYear,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: false, signed: false),
                             inputFormatters: [
                               LengthLimitingTextInputFormatter(
                                   4), // <-- Ограничение на 2 символа

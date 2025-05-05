@@ -141,14 +141,21 @@ class _buildRightPanelState extends State<buildRightPanel> {
     Navigator.pushNamed(context, '/auth/register');
   }
 
-  void _handleLogin() {
+  void _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
-      print("Email: $email, Password: $password");
-      // Здесь логика входа
-      auth.loginWithEmailPassword(email: email, password: password);
-      Navigator.pushNamed(context, "/");
+
+      final user =
+          await auth.loginWithEmailPassword(email: email, password: password);
+
+      if (user != null) {
+        context.go("/");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ошибка входа. Проверьте данные.")),
+        );
+      }
     }
   }
 

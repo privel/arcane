@@ -140,15 +140,24 @@ class _buildRightPanelState extends State<buildRightPanel> {
     Navigator.pushNamed(context, '/auth/login');
   }
 
-  void _submit() {
+  void _submit() async {
     if (_formKey.currentState?.validate() ?? false) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
-      auth.registerWithEmailPassword(email: email, password: password);
-      Navigator.pushNamed(context, "/");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Регистрация прошла успешно")),
-      );
+
+      final user = await auth.registerWithEmailPassword(
+          email: email, password: password);
+
+      if (user != null) {
+        context.go("/");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Регистрация прошла успешно")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ошибка регистрации")),
+        );
+      }
     }
   }
 

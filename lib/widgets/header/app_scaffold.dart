@@ -40,101 +40,115 @@ class _AppScaffoldState extends State<AppScaffold> {
     final user = FirebaseAuth.instance.currentUser;
     final isLoggedIn = user != null;
 
-    return Scaffold(
-      drawer: isTabletOrSmaller ? buildDrawer(context) : null,
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverPersistentHeader(
-            pinned: false,
-            floating: true,
-            delegate: _AnimatedHeader(
-              minExtent: 66,
-              maxExtent: 66,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    if (isTabletOrSmaller) ...[
-                      Builder(
-                        builder: (context) => IconButton(
-                          icon: const Icon(Icons.menu),
-                          onPressed: () => Scaffold.of(context).openDrawer(),
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      const Text(
-                        "Arcane",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ] else ...[
-                      const Text(
-                        "Arcane",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      NavButton(
-                          label: "Главная", onPressed: () => context.go('/')),
-                      NavButton(
-                          label: "Продукты",
-                          onPressed: () => context.go('/products')),
-                      NavButton(
-                          label: "Проекты",
-                          onPressed: () => context.go('/projects')),
-                      NavButton(
-                          label: "Задачи",
-                          onPressed: () => context.go('/tasks')),
-                      NavButton(
-                          label: "Настройки",
-                          onPressed: () => context.go('/settings')),
-                      const Spacer(),
-                      if (isLoggedIn) ...[
-                        Text(
-                          user!.email ?? '',
-                          style: const TextStyle(
-                              fontSize: 14, color: Colors.black54),
-                        ),
-                        const SizedBox(width: 12),
-                        TextButton.icon(
-                          onPressed: () async {
-                            await FirebaseAuth.instance.signOut();
-                            context.go('/');
-                          },
-                          icon: const Icon(Icons.logout, size: 18),
-                          label: const Text("Выйти"),
-                        ),
-                      ] else ...[
-                        TextButton.icon(
-                          onPressed: () => context.go('/auth/login'),
-                          icon: const Icon(Icons.login, size: 18),
-                          label: const Text("Войти"),
-                        ),
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        final user = snapshot.data;
+        final isLoggedIn = user != null;
+        return Scaffold(
+          // drawer: isTabletOrSmaller ? buildDrawer(context) : null,
+          drawer: isTabletOrSmaller ? buildDrawer(context, user) : null,
+          body: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverPersistentHeader(
+                pinned: false,
+                floating: true,
+                delegate: _AnimatedHeader(
+                  minExtent: 66,
+                  maxExtent: 66,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Row(
+                      children: [
+                        if (isTabletOrSmaller) ...[
+                          Builder(
+                            builder: (context) => IconButton(
+                              icon: const Icon(Icons.menu),
+                              onPressed: () =>
+                                  Scaffold.of(context).openDrawer(),
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          const Text(
+                            "Arcane",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ] else ...[
+                          const Text(
+                            "Arcane",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          NavButton(
+                              label: "Главная",
+                              onPressed: () => context.go('/')),
+                          NavButton(
+                              label: "Продукты",
+                              onPressed: () => context.go('/products')),
+                          NavButton(
+                              label: "Проекты",
+                              onPressed: () => context.go('/projects')),
+                          NavButton(
+                              label: "Задачи",
+                              onPressed: () => context.go('/tasks')),
+                          NavButton(
+                              label: "Настройки",
+                              onPressed: () => context.go('/settings')),
+                          const Spacer(),
+                          if (isLoggedIn) ...[
+                            Text(
+                              user!.email ?? '',
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black54),
+                            ),
+                            const SizedBox(width: 12),
+                            TextButton.icon(
+                              onPressed: () async {
+                                setState(() async {
+                                  await FirebaseAuth.instance.signOut();
+                                });
+
+                                context.go('/');
+                              },
+                              icon: const Icon(Icons.logout, size: 18),
+                              label: const Text("Выйти"),
+                            ),
+                          ] else ...[
+                            TextButton.icon(
+                              onPressed: () => context.go('/auth/login'),
+                              icon: const Icon(Icons.login, size: 18),
+                              label: const Text("Войти"),
+                            ),
+                          ],
+                        ],
                       ],
-                    ],
-                  ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+              SliverToBoxAdapter(
+                child: widget.child,
+              ),
+            ],
           ),
-          SliverToBoxAdapter(
-            child: widget.child,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget buildDrawer(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+  Widget buildDrawer(BuildContext context, User? user) {
     final isLoggedIn = user != null;
+    // final user = FirebaseAuth.instance.currentUser;
+    // final isLoggedIn = user != null;
 
     return Drawer(
       child: Column(

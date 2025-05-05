@@ -226,6 +226,7 @@ class _MainCodeState extends State<MainCode> {
       drawer: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET)
           ? buildDrawer(context)
           : null,
+      drawerEnableOpenDragGesture: false,
     );
   }
 
