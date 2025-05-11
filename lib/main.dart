@@ -104,129 +104,134 @@ class _MainCodeState extends State<MainCode> {
   @override
   Widget build(BuildContext context) {
     final navProvider = Provider.of<NavigationProvider>(context);
+    final isMobile = ResponsiveBreakpoints.of(context).isMobile;
 
-    return Scaffold(
-      body: NotificationListener<UserScrollNotification>(
-        onNotification: (notification) {
-          final direction = notification.direction;
+    return GestureDetector(
+      onHorizontalDragStart: isMobile ? (_) {} : null,
+      child: Scaffold(
+        body: NotificationListener<UserScrollNotification>(
+          onNotification: (notification) {
+            final direction = notification.direction;
 
-          if (direction == ScrollDirection.reverse && _isHeaderVisible) {
-            setState(() => _isHeaderVisible = false);
-          } else if (direction == ScrollDirection.forward &&
-              !_isHeaderVisible) {
-            setState(() => _isHeaderVisible = true);
-          }
+            if (direction == ScrollDirection.reverse && _isHeaderVisible) {
+              setState(() => _isHeaderVisible = false);
+            } else if (direction == ScrollDirection.forward &&
+                !_isHeaderVisible) {
+              setState(() => _isHeaderVisible = true);
+            }
 
-          return true;
-        },
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            SliverPersistentHeader(
-              pinned: false,
-              floating: true,
-              delegate: _AnimatedHeader(
-                minExtent: 66,
-                maxExtent: 66,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      if (ResponsiveBreakpoints.of(context)
-                          .smallerOrEqualTo(TABLET)) ...[
-                        Builder(
-                          builder: (context) => IconButton(
-                            icon: const Icon(Icons.menu),
-                            onPressed: () => Scaffold.of(context).openDrawer(),
+            return true;
+          },
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverPersistentHeader(
+                pinned: false,
+                floating: true,
+                delegate: _AnimatedHeader(
+                  minExtent: 66,
+                  maxExtent: 66,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        if (ResponsiveBreakpoints.of(context)
+                            .smallerOrEqualTo(TABLET)) ...[
+                          Builder(
+                            builder: (context) => IconButton(
+                              icon: const Icon(Icons.menu),
+                              onPressed: () =>
+                                  Scaffold.of(context).openDrawer(),
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 15,
-                        ),
-                        const Text(
-                          "Arcane",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                            color: Colors.black,
+                          const SizedBox(
+                            width: 15,
                           ),
-                        ),
+                          const Text(
+                            "Arcane",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                        if (ResponsiveBreakpoints.of(context)
+                            .largerThan(TABLET)) ...[
+                          const Text(
+                            "Arcane",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                              color: Colors.black,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          NavButton(
+                              label: "Главная",
+                              onPressed: () {
+                                Provider.of<NavigationProvider>(context,
+                                        listen: false)
+                                    .setIndex(0);
+                              }),
+                          NavButton(
+                              label: "Продукты",
+                              onPressed: () {
+                                Provider.of<NavigationProvider>(context,
+                                        listen: false)
+                                    .setIndex(1);
+                              }),
+                          NavButton(
+                              label: "Проекты",
+                              onPressed: () {
+                                Provider.of<NavigationProvider>(context,
+                                        listen: false)
+                                    .setIndex(2);
+                              }),
+                          NavButton(
+                              label: "Задачи",
+                              onPressed: () {
+                                Provider.of<NavigationProvider>(context,
+                                        listen: false)
+                                    .setIndex(3);
+                              }),
+                          NavButton(
+                              label: "Настройки",
+                              onPressed: () {
+                                Provider.of<NavigationProvider>(context,
+                                        listen: false)
+                                    .setIndex(4);
+                              }),
+                          const Spacer(),
+                          OutlinedButton.icon(
+                            onPressed: () async {
+                              await AuthService().signOut();
+                            },
+                            icon: const Icon(Icons.logout, size: 18),
+                            label: const Text("Выйти"),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.black,
+                              side: const BorderSide(color: Colors.black12),
+                            ),
+                          ),
+                        ]
                       ],
-                      if (ResponsiveBreakpoints.of(context)
-                          .largerThan(TABLET)) ...[
-                        const Text(
-                          "Arcane",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        NavButton(
-                            label: "Главная",
-                            onPressed: () {
-                              Provider.of<NavigationProvider>(context,
-                                      listen: false)
-                                  .setIndex(0);
-                            }),
-                        NavButton(
-                            label: "Продукты",
-                            onPressed: () {
-                              Provider.of<NavigationProvider>(context,
-                                      listen: false)
-                                  .setIndex(1);
-                            }),
-                        NavButton(
-                            label: "Проекты",
-                            onPressed: () {
-                              Provider.of<NavigationProvider>(context,
-                                      listen: false)
-                                  .setIndex(2);
-                            }),
-                        NavButton(
-                            label: "Задачи",
-                            onPressed: () {
-                              Provider.of<NavigationProvider>(context,
-                                      listen: false)
-                                  .setIndex(3);
-                            }),
-                        NavButton(
-                            label: "Настройки",
-                            onPressed: () {
-                              Provider.of<NavigationProvider>(context,
-                                      listen: false)
-                                  .setIndex(4);
-                            }),
-                        const Spacer(),
-                        OutlinedButton.icon(
-                          onPressed: () async {
-                            await AuthService().signOut();
-                          },
-                          icon: const Icon(Icons.logout, size: 18),
-                          label: const Text("Выйти"),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.black,
-                            side: const BorderSide(color: Colors.black12),
-                          ),
-                        ),
-                      ]
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            // Контент страницы
-            SliverToBoxAdapter(
-              child: pages[navProvider.currentIndex],
-            ),
-          ],
+              // Контент страницы
+              SliverToBoxAdapter(
+                child: pages[navProvider.currentIndex],
+              ),
+            ],
+          ),
         ),
+        drawer: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET)
+            ? buildDrawer(context)
+            : null,
+        drawerEnableOpenDragGesture: false,
       ),
-      drawer: ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET)
-          ? buildDrawer(context)
-          : null,
-      drawerEnableOpenDragGesture: false,
     );
   }
 
